@@ -52,7 +52,10 @@ gwQco1KRMDSmXSMkDwIDAQAB
 
     //////////// START LOCAL WEBSOCKET ////////////////////
 let localWebSocket;
-var useLocalServer=true;
+
+// Find one here: https://github.com/EloiStree/2024_05_10_TamperMonkeyToRsaTunnelingIID/blob/main/ScratchToLocalWebsocket/ScratchVarToLocalWebsocket.js
+var useLocalServer=false;
+    
 
 function connectLocalWebSocket() {
 
