@@ -3,7 +3,9 @@
 // @name         RSA SIGN WITH KEY PAIR TO TUNNELING WS
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  Allows to push integer from a website to a unsecure websocket https://github.com/EloiStree/2024_05_10_TamperMonkeyToRsaTunnelingIID/blob/main/ScratchToIIDWS/PushRandomInteger.js
+// @description  Allows to push integer from a website to a unsecure websocket
+// @description Code of this script : https://github.com/EloiStree/2024_05_10_TamperMonkeyToRsaTunnelingIID/blob/main/ScratchToIIDWS/PushRandomInteger.js
+// @description Server: https://github.com/EloiStree/2024_04_04_IndexIntegerDateTunnelingRSA/tree/main/CloudTunnelingRSA
 //
 // @author       Eloi stree
 // @match        https://scratch.mit.edu/projects/*
