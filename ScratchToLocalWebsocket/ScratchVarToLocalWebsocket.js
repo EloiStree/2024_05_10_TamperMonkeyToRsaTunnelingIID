@@ -1,12 +1,30 @@
 // ==UserScript==
-// @name         Main Use Scratch as controller with Websocket from HTML code.
+// @name         Scratch HTML CODE to key value on local websocket.
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  Extract data from webpage when right-clicked
+// @description  Source : https://github.com/EloiStree/2024_05_10_TamperMonkeyToRsaTunnelingIID/blob/main/ScratchToLocalWebsocket/ScratchVarToLocalWebsocket.js
 // @author       Éloi Strée
 // @match        https://scratch.mit.edu/projects/*
 // @grant        none
 // ==/UserScript==
+
+
+/** PYTHON SERVER TO TEST
+
+import asyncio
+import websockets
+# create handler for each connection
+async def handler(websocket, path):
+    data = await websocket.recv()
+    print(f"Data recieved as: {data}")
+
+start_server = websockets.serve(handler, "localhost", 7072)
+
+asyncio.get_event_loop().run_until_complete(start_server)
+asyncio.get_event_loop().run_forever()
+
+*/
 
 (function() {
     'use strict';
@@ -64,7 +82,7 @@
 
     // Extract data and send it to WebSocket server
     function extractAndSendData() {
-        console.time('extractAndSendData'); // Start the timer
+        //console.time('extractAndSendData'); // Start the timer
         var dataString = ''; // Initialize empty string to store data
 
         // Find all elements with class 'react-contextmenu-wrapper'
@@ -101,7 +119,7 @@
             previousData.fullText = dataString;
             sendText("<FullData>\n"+ dataString + "\n</FullData>");
         }
-        console.timeEnd('extractAndSendData'); // End the timer and display the elapsed time
+        //console.timeEnd('extractAndSendData'); // End the timer and display the elapsed time
     }
 
     // Call the function to create WebSocket connection
