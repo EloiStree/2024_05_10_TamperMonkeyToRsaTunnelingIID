@@ -3,10 +3,10 @@
 // @name         RSA SIGN WITH KEY PAIR TO TUNNELING WS
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
-// @match        https://integergames.be
-// @icon         https://integergames.be
+// @description  Allows to push integer from a website to a unsecure websocket https://github.com/EloiStree/2024_05_10_TamperMonkeyToRsaTunnelingIID/blob/main/ScratchToIIDWS/PushRandomInteger.js
+//
+// @author       Eloi stree
+// @match        https://scratch.mit.edu/projects/*
 // @require      http://code.jquery.com/jquery-1.8.3.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.3.2/jsencrypt.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js
@@ -44,14 +44,9 @@ xFxdU6jE0NQ+Z+zEdhUTooNRaY5nZiu5PgDB0ED/ZKBUSLKL7eibMxZtMlUDHjm4
 gwQco1KRMDSmXSMkDwIDAQAB
 -----END PUBLIC KEY-----`;
 
-    //console.log(publicKey);
-    //console.log(privateKey);
 
 
-
-
-
-                console.log('Code Start ');
+console.log('Code Start ');
 var socket = new WebSocket('ws://81.240.94.97:4501');
 var isConnectionValide=false;
 
@@ -120,17 +115,15 @@ socket.addEventListener('message', (event) => {
         console.log("Connection establish :)");
     }
 } else {
-    console.log('The variable received is not a string.');
+    //console.log('The variable received is not a string.');
     if (event.data instanceof Blob) {
         if (event.data.size === 16) {
-            console.log('The variable is a Blob of 16 bytes.');
+           // console.log('The variable is a Blob of 16 bytes.');
             //I don't know how to turn the Blob in value.
             // Should bet int | int | ulong  value.
         }
     }
 }
-
-
 });
 
 // Event listener for when the connection is closed
@@ -146,8 +139,8 @@ socket.addEventListener('error', (error) => {
 });
 
 
-                console.log('Code Websocket end');
-    function Test(){
+console.log('Code Websocket end');
+function Test(){
 
 
 
