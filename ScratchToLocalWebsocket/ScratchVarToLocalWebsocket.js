@@ -6,7 +6,7 @@
 // @description  Source: https://github.com/EloiStree/2024_05_10_TamperMonkeyToRsaTunnelingIID/blob/main/ScratchToLocalWebsocket/ScratchVarToLocalWebsocket.js
 // @author       Eloi stree
 // @match        https://scratch.mit.edu/projects/*
-// @icon         https://www.google.com/s2/favicons?sz=64&domain=tampermonkey.net
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=integergames.be
 // @require      http://code.jquery.com/jquery-1.8.3.min.js
 
 // @grant        none
@@ -32,7 +32,7 @@ var useConsoleDebug=false;
            return;
        }
        const randomInt = Math.floor(Math.random() * 1000000000) + 1;
-       PushMessageToServerIntegerNotDate(randomInt)
+       PushMessageToServerInteger(randomInt)
 
    }
    function PushMessageToServerIntegerDate(integer){
