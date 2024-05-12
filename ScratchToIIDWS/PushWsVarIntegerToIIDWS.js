@@ -22,6 +22,10 @@
 
 
 // Replace with your RSA KEY THIS ONE IS A EXAMPLE
+// YELLOW KEY 6 In IID Public server
+// This key is based on workshop and can change at anytime.
+// Repalce this key by your key. And never share it to other.
+// https://github.com/EloiStree/IntegerGamesPublicKey/tree/main/6
 const privateKey =
 `-----BEGIN RSA PRIVATE KEY-----
 MIICXQIBAAKBgQDXUkJcl8o9AYV2yK90c+FqL2tmfWs/rVtpqtS9X2CyRIwUrS6H
