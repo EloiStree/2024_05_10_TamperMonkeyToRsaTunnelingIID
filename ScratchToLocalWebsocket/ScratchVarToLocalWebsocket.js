@@ -3,7 +3,7 @@
 // @name         Push Scratch wscar to Local WS IID
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description test
+// @description  Source: https://github.com/EloiStree/2024_05_10_TamperMonkeyToRsaTunnelingIID/blob/main/ScratchToLocalWebsocket/ScratchVarToLocalWebsocket.js
 // @author       Eloi stree
 // @match        https://scratch.mit.edu/projects/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=tampermonkey.net
