@@ -1,103 +1,148 @@
+
 // ==UserScript==
-// @name         Scratch HTML CODE to key value on local websocket.
+// @name         Push Scratch wscar to Local WS IID
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  Extract data from webpage when right-clicked
-// @description  Source : https://github.com/EloiStree/2024_05_10_TamperMonkeyToRsaTunnelingIID/blob/main/ScratchToLocalWebsocket/ScratchVarToLocalWebsocket.js
-// @author       Éloi Strée
+// @description test
+// @author       Eloi stree
 // @match        https://scratch.mit.edu/projects/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=tampermonkey.net
+// @require      http://code.jquery.com/jquery-1.8.3.min.js
+
 // @grant        none
+
 // ==/UserScript==
-
-
-/** PYTHON SERVER TO TEST
-
-import asyncio
-import websockets
-import socket
-
-udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-target_ip = "127.0.0.1"
-target_port = 7073
-
-async def handler(websocket, path):
-    while True:
-        global target_port
-        data = await websocket.recv()
-        print(f"Key Value| {data}")
-        date_parts = data.split(":")
-        if(len(date_parts) == 2):
-            key = date_parts[0]
-            value = date_parts[1]
-            print(f"Key {key}  |  Value {value}")
-            try:
-                value = int(value)
-                value_bytes = value.to_bytes(2, byteorder='little')
-                udp_socket.sendto(value_bytes, (target_ip, target_port))
-                print(f"Push Integer| {value} |{value_bytes}")
-            except ValueError:
-                pass
-
-start_server = websockets.serve(handler, "localhost", 7072)
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
-
-*/
-
+//TO LOOK LATER
+//https://github.com/travist/jsencrypt
 (function() {
     'use strict';
 
-    var socket = null; // Initialize WebSocket variable
-    var previousData = {}; // Store the previous data
-    var useKeyValue = true;
+console.log("Hello :) ")
 
-    // Function to create WebSocket connection
-    function connectWebSocket() {
-        // Create WebSocket connection
-        if (socket === null || socket.readyState === WebSocket.CLOSED){
+console.log('Code Start ');
+var socket = new WebSocket('ws://localhost:7073');
+var isConnectionValide=false;
+var previousData = {}; // Store the previous data
+var useKeyValue = true;
+var useConsoleDebug=false;
 
-            //  https://github.com/EloiStree/2024_02_01_UDPWebsocketRedirection
-            socket = new WebSocket('ws://localhost:7072');
 
-            // WebSocket events
-            socket.addEventListener('open', function (event) {
-                console.log('WebSocket connected');
+   function PushMessageToServerRandomInteger(){
+       if(!isConnectionValide){
+           return;
+       }
+       const randomInt = Math.floor(Math.random() * 1000000000) + 1;
+       PushMessageToServerIntegerNotDate(randomInt)
+
+   }
+   function PushMessageToServerIntegerDate(integer){
+    if(!isConnectionValide){return;}
+
+    //socket.send("i|"+integer);
+
+      var value =integer;
+     // Get the current UTC time in milliseconds
+     const currentTimeMillis = Date.now();
+
+     // Convert to an unsigned long (assuming 64-bit)
+     const ulongVar = BigInt(currentTimeMillis);
+
+     // Create a byte array of length 12
+     const byteArray = new Uint8Array(12);
+     // Set the first 4 bytes of the array from the value in little-endian format
+     byteArray[0] = value & 0xFF;
+     byteArray[1] = (value >> 8) & 0xFF;
+     byteArray[2] = (value >> 16) & 0xFF;
+     byteArray[3] = (value >> 24) & 0xFF;
+
+     // Set the next 8 bytes of the array from ulongVar in little-endian format
+     const view = new DataView(byteArray.buffer);
+     view.setBigUint64(4, ulongVar, true);
+     socket.send(byteArray);
+     console.log("Random date with date:", value)
+}
+
+
+function PushMessageToServerInteger(integer){
+    if(!isConnectionValide){return;}
+
+      var value =integer;
+     const byteArray = new Uint8Array(4);
+     byteArray[0] = value & 0xFF;
+     byteArray[1] = (value >> 8) & 0xFF;
+     byteArray[2] = (value >> 16) & 0xFF;
+     byteArray[3] = (value >> 24) & 0xFF;
+     socket.send(byteArray);
+     console.log("Random int:", value)
+}
+
+
+
+
+var server_is_offline=false;
+function ReconnectIfOffline(){
+
+    if (socket && socket.readyState === WebSocket.OPEN) {
+    }
+    else{
+        isConnectionValide=false
+        try{
+            socket = new WebSocket('ws://localhost:7073');
+            // Event listener for when the connection is established
+            socket.addEventListener('open', () => {
+                console.log('WebSocket connection established');
+                isConnectionValide=true
             });
 
-            socket.addEventListener('message', function (event) {
-                console.log('Message from server:', event.data);
+            // Event listener for incoming messages
+            socket.addEventListener('message', (event) => {
+                console.log('Received message from server:', event.data);
+
             });
 
-            socket.addEventListener('close', function (event) {
+            // Event listener for when the connection is closed
+            socket.addEventListener('close', () => {
                 console.log('WebSocket connection closed');
-                // Reconnect if connection closed unexpectedly
-                connectWebSocket();
+                isConnectionValide=false
+
             });
 
-            socket.addEventListener('error', function (event) {
-                console.error('WebSocket connection error:', event);
+            // Event listener for errors
+            socket.addEventListener('error', (error) => {
+                console.error('WebSocket error:', error);
             });
+            server_is_offline=false;
+            console.log("Server Online");
+        }catch(Exception){
+            server_is_offline=true;
         }
     }
+}
 
-    // Check WebSocket status and reconnect if necessary
-    function checkWebSocketStatus() {
-        if (socket===null || socket.readyState === WebSocket.CLOSED) {
-            console.log('WebSocket is not open. Reconnecting...');
-            connectWebSocket();
-        }
-    }
-    function sendText(data) {
-        if (socket && socket.readyState === WebSocket.OPEN) {
-           // socket.send(data);
-        }
-    }
+
+
     // Send data to WebSocket server
-    function sendData(label, value) {
+    function sentKeyValueToOpenWebsocket(label, value) {
+
         if (socket && socket.readyState === WebSocket.OPEN) {
-            socket.send(label + ":" + value);
+            const lowerStr = label.toLowerCase().trim();
+
+            if (lowerStr.startsWith("wsvar ")) {
+                const number = parseInt(value);
+                //console.log("The string starts with 'wsvar'");
+                if (!isNaN(number)) {
+
+                    console.log("Change detectected wsvar int: "+value)
+                    PushMessageToServerInteger(number);
+                    //console.log("The string is a valid integer:", number);
+                } else {
+                    //console.log("The string is not a valid integer");
+                }
+            }
+
         }
     }
+
 
     // Extract data and send it to WebSocket server
     function extractAndSendData() {
@@ -120,33 +165,32 @@ asyncio.get_event_loop().run_forever()
             var value = valueElement ? valueElement.textContent.trim() : '';
 
             if (label && value) {
-                dataString += label + ': ' + value + '\n';
-                if (useKeyValue) {
+                if(label.startsWith("wsvar ") ){
+                   dataString += label + ': ' + value + '\n';
+
+                   if (useKeyValue) {
                     if (!previousData[label]) {
                         previousData[label] = value;
-                        sendData(label, value);
+                        sentKeyValueToOpenWebsocket(label, value);
                     } else {
                         if (previousData[label] !== value) {
                             previousData[label] = value;
-                            sendData(label, value);
+
+                            console.log("Change detectected: "+value)
+                            sentKeyValueToOpenWebsocket(label, value);
                         }
                     }
                 }
+                }
             }
         }
-       
-        //console.timeEnd('extractAndSendData'); // End the timer and display the elapsed time
     }
 
-    // Call the function to create WebSocket connection
-    connectWebSocket();
 
-    // Call the extractAndSendData function initially
-    extractAndSendData();
+    console.log("Interval :) Start ")
 
-    // Invoke the extractAndSendData function every 15 milliseconds
-    setInterval(extractAndSendData, 15);
+    setInterval(ReconnectIfOffline, 1000);
+    setInterval(extractAndSendData,15)
+    console.log('Code end reach');
 
-    // Check WebSocket status every 2 seconds
-    setInterval(checkWebSocketStatus, 2000);
 })();
