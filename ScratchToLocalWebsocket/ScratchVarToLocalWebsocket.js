@@ -3,7 +3,7 @@
 // @name         Push Scratch wscar to Local WS IID
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  Source: https://github.com/EloiStree/2024_05_10_TamperMonkeyToRsaTunnelingIID/blob/main/ScratchToLocalWebsocket/ScratchVarToLocalWebsocket.// @descriptionjs
+// @description  Source: https://github.com/EloiStree/2024_05_10_TamperMonkeyToRsaTunnelingIID/blob/main/ScratchToLocalWebsocket/ScratchVarToLocalWebsocket.js
 // @description  Test zone: https://scratch.mit.edu/projects/1018462085
 // @author       Eloi stree
 // @match        https://scratch.mit.edu/projects/*
@@ -21,7 +21,8 @@
 console.log("Hello :) ")
 
 console.log('Code Start ');
-var socket = new WebSocket('ws://localhost:7073');
+var socketUrl= 'ws://localhost:7073';
+var socket = null;
 var isConnectionValide=false;
 var previousData = {}; // Store the previous data
 var useKeyValue = true;
@@ -74,7 +75,7 @@ function PushMessageToServerInteger(integer){
      byteArray[2] = (value >> 16) & 0xFF;
      byteArray[3] = (value >> 24) & 0xFF;
      socket.send(byteArray);
-     console.log("Random int:", value)
+     console.log("Int Pushed to web local server:", value)
 }
 
 
@@ -83,12 +84,15 @@ function PushMessageToServerInteger(integer){
 var server_is_offline=false;
 function ReconnectIfOffline(){
 
-    if (socket && socket.readyState === WebSocket.OPEN) {
+//    console.log('Try to reconnect to websocket server');
+    if (socket !=null && socket && socket.readyState === WebSocket.OPEN) {
+         //   console.log('Already in');
     }
     else{
         isConnectionValide=false
         try{
-            socket = new WebSocket('ws://localhost:7073');
+            console.log('Try estabalish connection with: '+socketUrl);
+            socket = new WebSocket(socketUrl);
             // Event listener for when the connection is established
             socket.addEventListener('open', () => {
                 console.log('WebSocket connection established');
