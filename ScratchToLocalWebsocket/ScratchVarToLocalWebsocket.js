@@ -1,6 +1,6 @@
 
 // ==UserScript==
-// @name         Push Scratch wscar to Local WS IID
+// @name         Push Scratch wsvar to Local WS IID
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  Source: https://github.com/EloiStree/2024_05_10_TamperMonkeyToRsaTunnelingIID/blob/main/ScratchToLocalWebsocket/ScratchVarToLocalWebsocket.js
@@ -23,7 +23,7 @@ What this code do ?
 This code overlook at the HTML code when you are on https://scratch.mit.edu/projects/*
 It searches about the HTML of a variable display in the scratch game that are a HTML Div code.
 The div Id are
-- name: .monitor_label_ci1ok  
+- name: .monitor_label_ci1ok
 - value: .monitor_value_3Yexa
 
 It add the key value in a dictionary if the value changed only to avoid spam when send outside of the script.
@@ -31,7 +31,7 @@ It add the key value in a dictionary if the value changed only to avoid spam whe
 With the help of a unsecure websocket client it send the value as a integer converted to 4 bytes in little format.
 To use this script you need to recover it with a websocket server of your own and turn back the 4 bytes to integer.
 
-*/    
+*/
 
 
 //Just show in console that the script is injected
@@ -41,11 +41,11 @@ console.log("Hello Tamper to Integer :).\n Websocket client will try to connect 
 var socketUrl= 'ws://localhost:7073';
 // Defined the var of the future websocket client
 var socket = null;
-// Will be use to have a way to know that the server is still in theory connected 
+// Will be use to have a way to know that the server is still in theory connected
 var isConnectionValide=false;
 // Dictionnary that is storing the previous state when a change happened
 // Used to detect any change in the Scratch variable
-var previousData = {}; 
+var previousData = {};
 
 // Do we want to display console log in the browser or not.
 var useConsoleDebug=false;
@@ -62,10 +62,7 @@ var useConsoleDebug=false;
     /*This function send an integer into a exportable value with the date of when it was detected as a ulong format */
    function PushMessageToServerIntegerDate(integer){
     if(!isConnectionValide){return;}
-
-    
       var value =integer;
-     
        // Get the current UTC time in milliseconds
      const currentTimeMillis = Date.now();
 
@@ -120,7 +117,6 @@ function ReconnectIfOffline(){
             if(useConsoleDebug)
             console.log('Try estabalish connection with: '+socketUrl);
             socket = new WebSocket(socketUrl);
-            
             // Event listener for when the connection is established
             socket.addEventListener('open', () => {
                 console.log('WebSocket connection established');
@@ -180,14 +176,14 @@ function ReconnectIfOffline(){
     /*This will look in the HTML code for the Scratch variable as HTML.
     If it find the div of the key value that start with "wsvar ". It will set them in the dictionary and notify if it changed*/
     function extractAndSendData() {
-        var dataString = ''; 
+        var dataString = '';
         // Find all elements with class 'react-contextmenu-wrapper'
         var elements = document.getElementsByClassName('react-contextmenu-wrapper');
         // Iterate through each element
         for (var i = 0; i < elements.length; i++) {
             var element = elements[i];
             // Find elements with classes 'monitor_label_ci1ok' and 'monitor_value_3Yexa' within current element
-            var labelElement = element.querySelector('.monitor_label_ci1ok');  
+            var labelElement = element.querySelector('.monitor_label_ci1ok');
             var valueElement = element.querySelector('.monitor_value_3Yexa');
 
             // Extract text content from label and value elements
@@ -197,8 +193,6 @@ function ReconnectIfOffline(){
             if (label && value) {
                 if(label.startsWith("wsvar ") ){
                    dataString += label + ': ' + value + '\n';
-
-                   
                     if (!previousData[label]) {
                         previousData[label] = value;
                         sentKeyValueToOpenWebsocket(label, value);
@@ -210,7 +204,6 @@ function ReconnectIfOffline(){
                             sentKeyValueToOpenWebsocket(label, value);
                         }
                     }
-                
                 }
             }
         }
@@ -220,8 +213,7 @@ function ReconnectIfOffline(){
         console.log("Interval :) Start ")
 
     setInterval(ReconnectIfOffline, 1000);
-    setInterval(extractAndSendData,15)
-    
+    setInterval(extractAndSendData,15);
     if(useConsoleDebug)
         console.log('Code end reach');
 
