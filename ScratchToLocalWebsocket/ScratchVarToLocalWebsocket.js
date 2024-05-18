@@ -18,17 +18,39 @@
 (function() {
     'use strict';
 
-console.log("Hello :) ")
+/*
+What this code do ?
+This code overlook at the HTML code when you are on https://scratch.mit.edu/projects/*
+It searches about the HTML of a variable display in the scratch game that are a HTML Div code.
+The div Id are
+- name: .monitor_label_ci1ok  
+- value: .monitor_value_3Yexa
 
-console.log('Code Start ');
+It add the key value in a dictionary if the value changed only to avoid spam when send outside of the script.
+
+With the help of a unsecure websocket client it send the value as a integer converted to 4 bytes in little format.
+To use this script you need to recover it with a websocket server of your own and turn back the 4 bytes to integer.
+
+*/    
+
+
+//Just show in console that the script is injected
+console.log("Hello Tamper to Integer :).\n Websocket client will try to connect to websocket server. \n  ")
+
+// Creating url to push on local computer at the port 7073 the integer that changed.
 var socketUrl= 'ws://localhost:7073';
+// Defined the var of the future websocket client
 var socket = null;
+// Will be use to have a way to know that the server is still in theory connected 
 var isConnectionValide=false;
-var previousData = {}; // Store the previous data
-var useKeyValue = true;
+// Dictionnary that is storing the previous state when a change happened
+// Used to detect any change in the Scratch variable
+var previousData = {}; 
+
+// Do we want to display console log in the browser or not.
 var useConsoleDebug=false;
 
-
+/* This function is use to make some test. It allow to push randomply a integer if the connection is still active */
    function PushMessageToServerRandomInteger(){
        if(!isConnectionValide){
            return;
@@ -37,13 +59,14 @@ var useConsoleDebug=false;
        PushMessageToServerInteger(randomInt)
 
    }
+    /*This function send an integer into a exportable value with the date of when it was detected as a ulong format */
    function PushMessageToServerIntegerDate(integer){
     if(!isConnectionValide){return;}
 
-    //socket.send("i|"+integer);
-
+    
       var value =integer;
-     // Get the current UTC time in milliseconds
+     
+       // Get the current UTC time in milliseconds
      const currentTimeMillis = Date.now();
 
      // Convert to an unsigned long (assuming 64-bit)
@@ -61,10 +84,12 @@ var useConsoleDebug=false;
      const view = new DataView(byteArray.buffer);
      view.setBigUint64(4, ulongVar, true);
      socket.send(byteArray);
+    if(useConsoleDebug)
      console.log("Random date with date:", value)
 }
 
 
+/*This function send an integer into a exportable value and don't attach to it a date value */
 function PushMessageToServerInteger(integer){
     if(!isConnectionValide){return;}
 
@@ -75,6 +100,7 @@ function PushMessageToServerInteger(integer){
      byteArray[2] = (value >> 16) & 0xFF;
      byteArray[3] = (value >> 24) & 0xFF;
      socket.send(byteArray);
+    if(useConsoleDebug)
      console.log("Int Pushed to web local server:", value)
 }
 
@@ -82,17 +108,19 @@ function PushMessageToServerInteger(integer){
 
 
 var server_is_offline=false;
+
+/*Try to reconnect with a new websocket client if it detect that the current is for any reason not there */
 function ReconnectIfOffline(){
 
-//    console.log('Try to reconnect to websocket server');
     if (socket !=null && socket && socket.readyState === WebSocket.OPEN) {
-         //   console.log('Already in');
     }
     else{
         isConnectionValide=false
         try{
+            if(useConsoleDebug)
             console.log('Try estabalish connection with: '+socketUrl);
             socket = new WebSocket(socketUrl);
+            
             // Event listener for when the connection is established
             socket.addEventListener('open', () => {
                 console.log('WebSocket connection established');
@@ -126,7 +154,7 @@ function ReconnectIfOffline(){
 
 
 
-    // Send data to WebSocket server
+    /*This will send key value as integer if it detect the variable start with "wsvar " and connection is open */
     function sentKeyValueToOpenWebsocket(label, value) {
 
         if (socket && socket.readyState === WebSocket.OPEN) {
@@ -149,20 +177,17 @@ function ReconnectIfOffline(){
     }
 
 
-    // Extract data and send it to WebSocket server
+    /*This will look in the HTML code for the Scratch variable as HTML.
+    If it find the div of the key value that start with "wsvar ". It will set them in the dictionary and notify if it changed*/
     function extractAndSendData() {
-        //console.time('extractAndSendData'); // Start the timer
-        var dataString = ''; // Initialize empty string to store data
-
+        var dataString = ''; 
         // Find all elements with class 'react-contextmenu-wrapper'
         var elements = document.getElementsByClassName('react-contextmenu-wrapper');
-
         // Iterate through each element
         for (var i = 0; i < elements.length; i++) {
             var element = elements[i];
-
             // Find elements with classes 'monitor_label_ci1ok' and 'monitor_value_3Yexa' within current element
-            var labelElement = element.querySelector('.monitor_label_ci1ok');
+            var labelElement = element.querySelector('.monitor_label_ci1ok');  
             var valueElement = element.querySelector('.monitor_value_3Yexa');
 
             // Extract text content from label and value elements
@@ -173,7 +198,7 @@ function ReconnectIfOffline(){
                 if(label.startsWith("wsvar ") ){
                    dataString += label + ': ' + value + '\n';
 
-                   if (useKeyValue) {
+                   
                     if (!previousData[label]) {
                         previousData[label] = value;
                         sentKeyValueToOpenWebsocket(label, value);
@@ -185,17 +210,19 @@ function ReconnectIfOffline(){
                             sentKeyValueToOpenWebsocket(label, value);
                         }
                     }
-                }
+                
                 }
             }
         }
     }
 
-
-    console.log("Interval :) Start ")
+    if(useConsoleDebug)
+        console.log("Interval :) Start ")
 
     setInterval(ReconnectIfOffline, 1000);
     setInterval(extractAndSendData,15)
-    console.log('Code end reach');
+    
+    if(useConsoleDebug)
+        console.log('Code end reach');
 
 })();
