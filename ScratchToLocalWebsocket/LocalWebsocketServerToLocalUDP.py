@@ -21,6 +21,7 @@ async def handler(websocket, path):
                 if(bool_display_received):
                     print(f"Received {len(data)} | {data}")
                     print(f"Sent {byte_counter} bytes, {byte_counter/(1024)} KB, {byte_counter/(1024*1024)} MB")
+                    print(f"Target: {target_udp_ip}:{target_udp_port}")
             except ValueError:
                 pass
             
